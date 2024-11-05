@@ -45,11 +45,28 @@ class QuizController extends Controller
             'http://test2.example.com',
         ];
         }
-    public function actionApiGet() {
-        $sql = "select vraag, antwoord1, antwoord2, antwoord3, antwoord4, juiste_antwoord from quiz";
-        $result = Yii::$app->db->createCommand($sql)->queryAll();
-            return json_encode($result);
+        public function actionApiGet() {
+
+            $sql = "select vraag, antwoord1, antwoord2, antwoord3, antwoord4, juiste_antwoord from quiz";
+            $result = Yii::$app->db->createCommand($sql)->queryAll();
+        
+            $output = [];
+            foreach ($result as $elem) {
+                array_push( $output,
+                    [   'questionText' => $elem['vraag'],
+                        'answerOptions' =>
+                        [
+                            ['answerText'=>$elem['antwoord1'],'isCorrect'=>( $elem['juiste_antwoord'] == 1 ? 1 : 0) ],
+                            ['answerText'=>$elem['antwoord2'],'isCorrect'=>( $elem['juiste_antwoord'] == 2 ? 1 : 0) ],
+                            ['answerText'=>$elem['antwoord3'],'isCorrect'=>( $elem['juiste_antwoord'] == 3 ? 1 : 0) ],
+                            ['answerText'=>$elem['antwoord4'],'isCorrect'=>( $elem['juiste_antwoord'] == 4 ? 1 : 0) ],
+                        ]
+                    ] );
+            }
+        
+            return json_encode($output);
         }
+    
     /**
      * Lists all Quiz models.
      *
