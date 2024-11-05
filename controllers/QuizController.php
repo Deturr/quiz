@@ -7,6 +7,7 @@ use app\models\QuizSearcher;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * QuizController implements the CRUD actions for Quiz model.
@@ -26,11 +27,29 @@ class QuizController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                     ],
+                    'class' => '\yii\filters\Cors',
+                    'cors' => [
+                    'Origin' => ['*'],
+                    'Access-Control-Request-Method' => ['GET', 'POST'],
+                    'Access-Control-Request-Headers' => ['*'],
+                ],
                 ],
             ]
         );
-    }
-
+        }
+    public static function allowedDomains()
+        {
+        return [
+            // '*',                        // star allows all domains
+            'http://localhost:3000',
+            'http://test2.example.com',
+        ];
+        }
+    public function actionApiGet() {
+        $sql = "select vraag, antwoord1, antwoord2, antwoord3, antwoord4, juiste_antwoord from quiz";
+        $result = Yii::$app->db->createCommand($sql)->queryAll();
+            return json_encode($result);
+        }
     /**
      * Lists all Quiz models.
      *
